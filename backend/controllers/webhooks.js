@@ -22,7 +22,7 @@ const clerkWebhooks=async(req,res)=>{
                             _id:data.id,
                             email:data.email_addresses[0].email_address,
                             name:data.first_name+" "+data.last_name,
-                            image:data.image_url,
+                            image:data.profile_image_url,
                             resume:''
                         }
                         await User.create(userData);
@@ -33,7 +33,7 @@ const clerkWebhooks=async(req,res)=>{
                      const userData={
                             email:data.email_addresses[0].email_address,
                             name:data.first_name+" "+data.last_name,
-                            image:data.image_url
+                            image:data.profile_image_url
                         }
                         await User.findByIdAndUpdate(data.id,userData);
                         res.json({});
