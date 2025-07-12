@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Savate:ital,wght@0,200..900;1,200..900&display=swap');
+*{
+    font-family: outfit;
+}
+
+@layer base { html { scroll-behavior: smooth;}}
+
+::-webkit-scrollbar{ display: none;}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.rich-text {
+  @apply text-gray-800 space-y-6 leading-relaxed;
+}
+.rich-text h2 {
+  @apply text-xl font-semibold text-gray-900 border-b pb-1;
+}
+.rich-text ol {
+  @apply list-decimal list-inside space-y-2 ml-5;
+}
+.rich-text p {
+  @apply mb-2;
+}
