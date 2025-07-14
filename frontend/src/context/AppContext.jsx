@@ -48,7 +48,7 @@ export const AppContextProvider=(props)=>{
             toast.error(error.message);
         }
        }
-       //Function to fetch user data
+    //    Function to fetch user data
        const fetchUserData=async()=>{
         try {
             const token=await getToken();
