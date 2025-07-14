@@ -1,6 +1,6 @@
 const {Webhook}=require('svix');
 const User =require('../models/User.js');
-
+require('dotenv').config();
 //API controller function to manage Clerk User with DataBase
 
 const clerkWebhooks=async(req,res)=>{

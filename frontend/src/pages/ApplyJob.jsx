@@ -8,25 +8,32 @@ import kconvert from 'k-convert';
 import moment from 'moment'
 import JobCard from '../components/JobCard';
 import Footer from '../components/Footer'
+import { toast } from 'react-toastify';
+import axios from 'axios';
 const ApplyJob = () => {
   const jobsPerPage = 2;
   const [currentPage, setCurrentPage] = useState(1);
   const { id } = useParams();
   const [jobData, setJobData] = useState(null);
-  const { jobs } = useContext(AppContext);
+  const { jobs,backendUrl } = useContext(AppContext);
 
   const fetchJob = async () => {
-    const data = jobs.filter(job => job._id === id);
-    if (data.length !== 0) {
-      setJobData(data[0]);
-    }
+     try {
+       const {data}=await axios.get(backendUrl+`/api/jobs/${id}`);
+       if(data.success){
+        setJobData(data.job);
+       }
+       else{
+        toast.error(data.message);
+       }
+     } catch (error) {
+      toast.error(error.message);
+     }
   }
 
   useEffect(() => {
-    if (jobs.length > 0) {
-      fetchJob();
-    }
-  }, [id, jobs]);
+    fetchJob();
+  }, [id]);
 
   const [otherJobs, setOtherJobs] = useState([]);
 
@@ -54,7 +61,7 @@ const ApplyJob = () => {
           {/* Header */}
           <div className='flex justify-center md:justify-between flex-col lg:flex-row gap-8 px-14 py-10 sm:py-16 mb-6 bg-blue-50 border border-blue-600 rounded-xl'>
             <div className='flex flex-col md:flex-row items-center max-md:items-start'>
-              <img className='h-32 bg-white rounded-lg p-4 mr-4 max-md:mb-4 border' src={assets.company_icon} alt="" />
+              <img className='h-32 bg-white rounded-lg p-4 mr-4 max-md:mb-4 border' src={jobData.companyId.image} alt="" />
               <div className='md:text-left text-neutral-700'>
                 <h1 className='text-xl sm:text-2xl md:text-3xl font-medium'>{jobData.title}</h1>
                 <div className='flex flex-col md:flex-row items-left md:items-center max-md:justify-center gap-y-2 gap-4 lg:gap-6 text-gray-600 mt-3'>

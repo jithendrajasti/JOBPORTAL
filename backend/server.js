@@ -3,10 +3,14 @@ const cors=require('cors');
 const connectDb = require('./config/database');
 require('dotenv').config();
 require('./config/instrument.js');
-
+const {clerkMiddleware}=require('@clerk/express');
 //Initialize express
 const sentry=require('@sentry/node');
 const clerkWebhooks = require('./controllers/webhooks.js');
+const router = require('./routes/CompanyRoutes.js');
+const connectCloudinary = require('./config/cloudinary.js');
+const jobRouter = require('./routes/JobRoutes.js');
+const userRoute = require('./routes/userRoutes.js');
 const app=express();
 
 //connect to database
@@ -14,6 +18,7 @@ const app=express();
 (async()=>{
     try {
         await connectDb();
+        await connectCloudinary();
     } catch (error) {
         console.log(error.message);
     }
@@ -25,6 +30,7 @@ app.use(cors());
 
 app.use(express.json());
 
+app.use(clerkMiddleware());
 //Routes
 app.get('/',(req,res)=>{
     res.send("API WORKING !");
@@ -32,7 +38,10 @@ app.get('/',(req,res)=>{
 app.get("/debug-sentry", function mainHandler(req, res) {
   throw new Error("My first Sentry error!");
 });
-app.post('/webhooks',clerkWebhooks)
+app.post('/webhooks',clerkWebhooks);
+app.use('/api/company',router);
+app.use('/api/jobs',jobRouter);
+app.use('/api/user',userRoute);
 sentry.setupExpressErrorHandler(app);
 //port
 

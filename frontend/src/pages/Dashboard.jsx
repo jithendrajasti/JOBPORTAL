@@ -1,27 +1,47 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { assets } from '../assets/assets'
+import { useContext } from 'react';
+import { AppContext } from '../context/AppContext';
 
 const Dashboard = () => {
     const navigate=useNavigate();
+    const {companyData,setCompanyData,setCompanyToken}=useContext(AppContext);
+
+    //Function to logout company
+    const logout=async()=>{
+        setCompanyToken(null);
+        localStorage.removeItem('companyToken');
+        setCompanyData(null);
+        navigate('/');
+    }
+
+    useEffect(()=>{
+        if(companyData){
+            navigate('/dashboard/manage-jobs');
+        }else{
+            navigate('/dashboard/add-job');
+        }
+    },[companyData]);
   return (
     <div className='min-h-screen'>
        {/* navbar for dashboard */}
        <div className='shadow py-4'>
         <div className='px-5 flex justify-between items-center'>
             <img onClick={()=>navigate('/')} className='max-sm:w-28 sm:w-40 cursor-pointer' src={assets.logo} alt="" />
-            <div className='flex items-center gap-5'>
-                <p className='max-sm:hidden text-lg text-slate-500 font-medium'>Welcome !</p>
+            {companyData &&
+            (<div className='flex items-center gap-5'>
+                <p className='max-sm:hidden text-lg text-slate-500 font-medium'>Welcome ! {companyData.name}</p>
                 <div className='relative group'>
-                    <img className='w-8 border-2 border-purple-100 rounded-full' src={assets.company_icon} alt="" />
+                    <img className='w-10 border-2 border-purple-100 rounded-full' src={companyData.image} alt="" />
                     <div className='absolute hidden group-hover:block top-0 right-0 z-10 text-black rounded pt-10 w-32 max-sm:w-24'>
                         <ul className='list-none m-0 py-2 bg-white rounded-md border text-sm flex flex-col items-start w-full'>
-                            <li className='py-1 px-2 cursor-pointer hover:bg-gray-200 text-amber-500 font-medium w-full'>My profile</li>
-                             <li className='py-1 px-2 cursor-pointer hover:bg-gray-200  text-red-500 font-medium w-full'>Logout</li>
+                             <li onClick={logout} className='py-1 px-2 cursor-pointer hover:bg-gray-200  text-red-500 font-medium w-full'>Logout</li>
                         </ul>
                     </div>
                 </div>
-            </div>
+            </div>)
+            }
         </div>
        </div>
        <div className='flex items-start overflow-x-hidden'>

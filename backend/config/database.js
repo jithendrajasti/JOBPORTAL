@@ -1,5 +1,5 @@
 const mongoose=require('mongoose');
-
+require('dotenv').config();
 //function to connect to mongodb database
 
 const connectDb=async()=>{
