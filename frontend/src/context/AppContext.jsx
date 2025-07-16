@@ -54,11 +54,29 @@ export const AppContextProvider=(props)=>{
             const token=await getToken();
             const {data}=await axios.get(backendUrl+'/api/user/user-data',{headers:{Authorization:`Bearer ${token}`}});
             if(data.success){
-                setUserData(data.user)
+                setUserData(data.user);
             }
             else{
                 toast.error(data.message);
             }
+        } catch (error) {
+            toast.error(error.message);
+        }
+       }
+       //Function to get user job applications data
+       const fetchUserApplications=async()=>{
+        try {
+            
+            const token=await getToken();
+            const {data}=await axios.get(backendUrl+'/api/user/user-application',{headers:{Authorization:`Bearer ${token}`}});
+
+            if(data.success){
+                setUserApplications(data.applications);
+            }
+            else{
+                toast.error(data.message);
+            }
+
         } catch (error) {
             toast.error(error.message);
         }
@@ -81,8 +99,9 @@ export const AppContextProvider=(props)=>{
        useEffect(()=>{
         if(user){
             fetchUserData();
+            fetchUserApplications();
         }
-       },[user])
+       },[user]);
 
         const value={
              searchFilter,setSearchFilter,
@@ -90,7 +109,9 @@ export const AppContextProvider=(props)=>{
              jobs,setJobs,
              showRecruiterLogin,setShowRecruiterLogin,
              companyToken,setCompanyToken,
-             companyData,setCompanyData,backendUrl
+             companyData,setCompanyData,backendUrl,
+             userData,setUserData,
+             userApplications,setUserApplications,fetchUserData,fetchUserApplications,fetchJobs
         }
         return (
             <AppContext.Provider value={value}>

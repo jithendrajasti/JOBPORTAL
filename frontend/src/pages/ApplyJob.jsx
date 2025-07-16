@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { AppContext } from '../context/AppContext';
 import Navbar from '../components/Navbar';
 import Loading from '../components/Loading';
@@ -10,12 +10,16 @@ import JobCard from '../components/JobCard';
 import Footer from '../components/Footer'
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { useAuth } from '@clerk/clerk-react';
 const ApplyJob = () => {
+  const navigate=useNavigate();
   const jobsPerPage = 2;
   const [currentPage, setCurrentPage] = useState(1);
   const { id } = useParams();
+  const {getToken}=useAuth();
   const [jobData, setJobData] = useState(null);
-  const { jobs,backendUrl } = useContext(AppContext);
+  const [isAlreadyApplied,setIsAlreadyApplied]=useState(false);
+  const { jobs,backendUrl,userData,userApplications,fetchUserApplications } = useContext(AppContext);
 
   const fetchJob = async () => {
      try {
@@ -31,6 +35,35 @@ const ApplyJob = () => {
      }
   }
 
+  const ApplyHandler=async()=>{
+    try {
+      if(!userData){
+        return toast.error('Login to apply for Jobs');
+      }
+      if(userData.resume===''){
+        navigate('/applications');
+        return toast.error('upload Resume to apply');
+      }
+      const token =await getToken();
+
+      const {data}=await axios.post(backendUrl+'/api/user/apply-job',{jobId:jobData._id},{headers:{Authorization:`Bearer ${token}`}});
+
+      if(data.success){
+        toast.success(data.message);
+        fetchUserApplications();
+      }
+      else{
+        toast.error(data.message);
+      }
+      navigate('/applications');
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
+ const checkAlreadyApplied=()=>{
+  const hasApplied=userApplications.some(item=>item.jobId._id === jobData._id);
+  setIsAlreadyApplied(hasApplied);
+ }
   useEffect(() => {
     fetchJob();
   }, [id]);
@@ -41,14 +74,17 @@ const ApplyJob = () => {
   if (jobData?.companyId?._id) {
     const filtered = jobs.filter(
       (job) =>
-        job._id !== jobData._id && job.companyId?._id === jobData.companyId._id
+        job._id !== jobData._id && job.companyId?._id === jobData.companyId._id && (!userApplications.some(item=>item.jobId._id === job._id))
     );
     setOtherJobs(filtered);
     setCurrentPage(1); // Reset to first page
   }
-}, [jobData]); // Only depend on jobData
+}, [jobData,userApplications]); 
 
-
+useEffect(()=>{
+  if(userApplications.length >0 && jobData)
+    checkAlreadyApplied();
+},[jobData,userApplications,id])
 
   const totalPages = Math.ceil(otherJobs.length / jobsPerPage);
   const paginatedJobs = otherJobs.slice((currentPage - 1) * jobsPerPage, currentPage * jobsPerPage);
@@ -85,7 +121,7 @@ const ApplyJob = () => {
               </div>
             </div>
             <div className='flex flex-col max-lg:flex-row max-md:flex-col gap-x-10 gap-y-3 justify-center max-lg:justify-start items-start max-lg:items-center max-md:items-start'>
-              <button className='font-medium text-lg bg-blue-500 text-white px-6 py-2 rounded-xl max-sm:text-sm max-sm:px-4'>Apply now</button>
+              <button onClick={ApplyHandler}  className='font-medium text-lg bg-blue-500 text-white px-6 py-2 rounded-xl max-sm:text-sm max-sm:px-4'>{isAlreadyApplied?'Already applied':"Apply Now"}</button>
               <p className='max-sm:text-sm font-light relative left-1'>Posted {moment(jobData.date).fromNow()}</p>
             </div>
           </div>
@@ -95,7 +131,7 @@ const ApplyJob = () => {
             <div className='w-full lg:w-2/3'>
               <h2 className='font-bold text-2xl mb-4'>Job description</h2>
               <div className='rich-text' dangerouslySetInnerHTML={{ __html: jobData.description }}></div>
-              <button className='font-medium text-lg bg-blue-500 text-white px-6 py-2 rounded-xl max-sm:text-sm max-sm:px-4 mt-10'>Apply now</button>
+              <button onClick={ApplyHandler}  className='font-medium text-lg bg-blue-500 text-white px-6 py-2 rounded-xl max-sm:text-sm max-sm:px-4 mt-10'>{isAlreadyApplied?'Already applied':"Apply Now"}</button>
             </div>
 
             {/* More jobs */}

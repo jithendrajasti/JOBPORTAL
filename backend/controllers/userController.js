@@ -1,5 +1,5 @@
 const Job = require("../models/job.js");
-const { JobApplication } = require("../models/JobApplication.js");
+const  JobApplication  = require("../models/JobApplication.js");
 const User = require("../models/User.js")
 const {v2:cloudinary}=require('cloudinary');
 
@@ -30,7 +30,7 @@ const applyForJob=async(req,res)=>{
         const isAlreadyApplied=await JobApplication.find({jobId,userId});
 
         if(isAlreadyApplied.length>0){
-            returnres.json({success:false,message:"Already applied"})
+            return res.json({success:false,message:"Already applied"})
         }
 
         const jobData=await Job.findById(jobId);
