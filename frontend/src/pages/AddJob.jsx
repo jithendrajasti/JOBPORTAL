@@ -6,7 +6,7 @@ import { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
 const AddJob = () => {
-    const {backendUrl,companyToken}=useContext(AppContext)
+    const {backendUrl,companyToken,fetchJobs}=useContext(AppContext)
     const [title,setTiltle]=useState('');
     const [location,setLocation]=useState('Banglore');
     const [category,setCategory]=useState('Programming');
@@ -30,6 +30,7 @@ const AddJob = () => {
                     setTiltle('');
                     setSalary(0);
                     quillRef.current.root.innerHTML=''; 
+                    fetchJobs();
                 }
                 else{
                     toast.error(data.message);
