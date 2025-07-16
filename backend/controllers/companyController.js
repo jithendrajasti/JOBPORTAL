@@ -6,6 +6,7 @@ require('dotenv').config();
 const Job=require('../models/job.js');
 const JobApplication=require('../models/JobApplication.js');
 const {PASSWORD_RESET_TEMPLATE}=require('../config/emailTemplate.js');
+const transporter=require('../config/nodeMailer.js');
 //Register a new company
 
 const registerCompany = async (req, res) => {
