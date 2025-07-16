@@ -33,7 +33,7 @@ const Dashboard = () => {
             (<div className='flex items-center gap-5'>
                 <p className='max-sm:hidden text-lg text-slate-500 font-medium'>Welcome ! {companyData.name}</p>
                 <div className='relative group'>
-                    <img className='w-10 border-2 border-purple-100 rounded-full' src={companyData.image} alt="" />
+                    <img className='w-28' src={companyData.image} alt="" />
                     <div className='absolute hidden group-hover:block top-0 right-0 z-10 text-black rounded pt-10 w-32 max-sm:w-24'>
                         <ul className='list-none m-0 py-2 bg-white rounded-md border text-sm flex flex-col items-start w-full'>
                              <li onClick={logout} className='py-1 px-2 cursor-pointer hover:bg-gray-200  text-red-500 font-medium w-full'>Logout</li>
