@@ -26,7 +26,10 @@ const app=express();
  
 //Middleware
 
-app.use(cors());
+app.use(cors({
+  origin: 'https://jobportal-frontend-sigma.vercel.app',
+  credentials: true,
+}));
 
 app.use(express.json());
 
