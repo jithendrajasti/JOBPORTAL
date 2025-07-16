@@ -248,7 +248,7 @@ const verifyPassword=async(req,res)=>{
             return  res.json({success:false,message:"password used previously"});
          }
          const salt = await bcrypt.genSalt(10);
-        const hashedpassword = await bcrypt.hash(user.password, salt);
+        const hashedpassword = await bcrypt.hash(newpassword, salt);
          user.password=hashedpassword;
          user.resetOtp='';
          user.resetOtpExpireAt=0;
