@@ -9,7 +9,7 @@ import { AppContext } from '../context/AppContext'
 const ResetPass = () => {
     const navigate = useNavigate()
     const {
-        backendUrl,setShowReruiterLogin
+        backendUrl,setShowRecruiterLogin
     } = useContext(AppContext)
 
     axios.defaults.withCredentials = true
@@ -73,7 +73,7 @@ const ResetPass = () => {
             })
             if (data.success) {
                 toast.success(data.message);
-                setShowReruiterLogin(true);
+                setShowRecruiterLogin(true);
                 navigate('/');
             } else {
                 toast.error(data.message)
