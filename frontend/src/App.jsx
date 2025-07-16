@@ -12,6 +12,7 @@ import ManageJobs from "./pages/ManageJobs"
 import 'quill/dist/quill.snow.css'
 
 import {ToastContainer} from 'react-toastify';
+import ResetPass from "./pages/resetPass"
 function App() {
 
   const { showRecruiterLogin,companyToken } = useContext(AppContext);
@@ -23,7 +24,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/apply-job/:id" element={<ApplyJob />} />
         <Route path="/applications" element={<Applications />} />
+        <Route path="/reset-pass" element={<ResetPass />} />
         <Route path="/dashboard" element={<Dashboard />}>
+        
           {companyToken ?
           <>
           <Route path="add-job" element={<AddJob />} />

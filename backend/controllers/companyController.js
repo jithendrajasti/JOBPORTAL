@@ -5,6 +5,7 @@ const generateToken = require('../utils/generateToken.js');
 require('dotenv').config();
 const Job=require('../models/job.js');
 const JobApplication=require('../models/JobApplication.js');
+const {PASSWORD_RESET_TEMPLATE}=require('../config/emailTemplate.js');
 //Register a new company
 
 const registerCompany = async (req, res) => {
@@ -191,5 +192,71 @@ const changeJobVisibility = async (req, res) => {
     }
 
 }
+//to reset password
 
-module.exports = { registerCompany, loginCompany, getCompanyData, postJob, getCompanyJobApplicants, getCompanyPostedJobs, changeJobApplicationStatus, changeJobVisibility };
+const resetPassword=async(req,res)=>{
+    const {email}=req.body;
+    if(!email){
+        return res.json({success:false,message:"Email is required"});
+    }
+    try {
+        const user=await Company.findOne({email});
+         if(!user){
+        return  res.json({success:false,message:"user not found"});
+      }
+      const otp=Math.floor(100000+Math.random() * 900000).toString();
+        user.resetOtp=otp;
+        user.resetOtpExpireAt=Date.now()+5*60*1000;
+        await user.save();
+
+        const mailOptions={
+          from:process.env.SENDER_EMAIL,
+          to:user.email,
+          subject:"password reset OTP",
+          html:PASSWORD_RESET_TEMPLATE.replace("{{email}}",email).replace('{{otp}}',otp)
+        }
+        await transporter.sendMail(mailOptions);
+        
+        res.json({success:true,message:"OTP sent to your email"});
+    } catch (error) {
+        res.json({success:false,message:error.message});
+    }
+}
+
+//const verifyPassword
+
+const verifyPassword=async(req,res)=>{
+    const {email,newpassword,otp}=req.body;
+    if(!email || !otp || !newpassword){
+        return res.json({success:false,message:"all fields are required"});
+    }
+    try{
+         const user=await Company.findOne({email});
+         if(!user){
+            return res.json({success:false,message:"user not found"});
+         }
+         if(user.resetOtp==='' || user.resetOtp!==otp){
+            return  res.json({success:false,message:"invalid otp"});
+         }
+         if(user.resetOtpExpireAt < Date.now()){
+            return  res.json({success:false,message:"Password Reset OTP is expired"});
+         }
+         const isOld = await bcrypt.compare(newpassword, user.password);
+
+         if(isOld){
+            return  res.json({success:false,message:"password used previously"});
+         }
+         const salt = await bcrypt.genSalt(10);
+        const hashedpassword = await bcrypt.hash(user.password, salt);
+         user.password=hashedpassword;
+         user.resetOtp='';
+         user.resetOtpExpireAt=0;
+         await user.save();
+
+        res.json({success:true,message:"password reset successful"});
+    }catch(error){
+         res.json({success:false,message:error.message});
+    }
+}
+
+module.exports = { registerCompany, loginCompany, getCompanyData, postJob, getCompanyJobApplicants, getCompanyPostedJobs, changeJobApplicationStatus, changeJobVisibility,resetPassword,verifyPassword };

@@ -60,9 +60,6 @@ const RecruiterLogin = () => {
     } catch (error) {
       toast.error(error.message);
     }
-
-
-
   }
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -102,7 +99,9 @@ const RecruiterLogin = () => {
               <img src={assets.lock_icon} alt="" />
               <input className='outline-none text-sm' type="password" placeholder='Password' required onChange={e => setPassword(e.target.value)} value={password} />
             </div>
-            {state === 'Login' && <p className='text-sm text-blue-600 mt-4 cursor-pointer '>Forgot password ?</p>}
+            {state === 'Login' && <p onClick={()=>{
+              navigate('/reset-pass');
+              setShowRecruiterLogin(false);}} className='text-sm text-blue-600 mt-4 cursor-pointer '>Forgot password ?</p>}
           </>
         }
 
