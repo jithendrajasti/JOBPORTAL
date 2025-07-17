@@ -6,7 +6,9 @@ const connectDb=async()=>{
     mongoose.connection.on('connected',()=>{
         console.log("DataBase connected");
     });
-    await mongoose.connect(`${process.env.MONGODB_URL}/job-portal`);
+    await mongoose.connect(`${process.env.MONGODB_URL}/job-portal`,{
+        serverSelectionTimeoutMS: 20000
+    });
 }
 
 module.exports=connectDb;
