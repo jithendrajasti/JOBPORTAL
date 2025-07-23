@@ -63,6 +63,20 @@ export const AppContextProvider=(props)=>{
             toast.error(error.message);
         }
        }
+       //Function to delete user job application
+       const deleteApplication=async(id)=>{
+        try {
+            const {data}=await axios.post(backendUrl+'/api/user/delete-application',{applicationId:id});
+            if(data.success){
+                toast.success(data.message);
+            }
+            else{
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+       }
        //Function to get user job applications data
        const fetchUserApplications=async()=>{
         try {
@@ -111,7 +125,8 @@ export const AppContextProvider=(props)=>{
              companyToken,setCompanyToken,
              companyData,setCompanyData,backendUrl,
              userData,setUserData,
-             userApplications,setUserApplications,fetchUserData,fetchUserApplications,fetchJobs
+             userApplications,setUserApplications,fetchUserData,fetchUserApplications,fetchJobs,
+             deleteApplication
         }
         return (
             <AppContext.Provider value={value}>
