@@ -16,6 +16,7 @@ const Applications = () => {
   const { getToken } = useAuth();
   const [isEdit, setIsEdit] = useState(false);
   const [resume, setResume] = useState(null);
+  const [showDropdown,setShowDropdown]=useState(false);
   const { backendUrl, userData, userApplications, fetchUserData, fetchUserApplications,deleteApplication } = useContext(AppContext);
 
   const updateResume = async () => {
@@ -94,10 +95,18 @@ const Applications = () => {
                         {job.status}
                       </span>
                     </td>
-                    <td className='py-1.5 px-2 sm:px-4 border-b max-sm:text-sm'><button className='flex justify-center items-center' onClick={async()=>{
-                      await deleteApplication(job._id);
-                      await fetchUserApplications();
-                    }}><Trash className='relative left-3 text-red-600' /></button></td>
+                    <td className='py-1.5 px-2 sm:px-4 border-b max-sm:text-sm'><div className='group relative inline-block text-left'>
+                    <button className='text-red-600' onClick={()=>setShowDropdown(true)}><Trash className='relative left-3' /></button>
+                    {
+                      showDropdown && <div className='z-10  absolute right-0 md:left-0 top-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow group-hover:block '>
+                      <button onClick={async()=>{
+                       await deleteApplication(job._id);
+                       await fetchUserApplications();
+                      }} className='block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100 '>Withdraw</button>
+                      <button className='block w-full text-left px-4 py-2 text-blue-500 hover:bg-gray-100 ' onClick={()=>setShowDropdown(false)}>Keep it</button>
+                    </div>
+                    }
+                  </div></td>
                   </tr>
                 ) : (
                   null
